@@ -2,8 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { IsEmail, IsNotEmpty, IsPhoneNumber } from 'class-validator';
 
-export class CreateUserDto
-  implements Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>
+export class UpdateUserDto
+  implements
+    Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt' | 'password'>
 {
   @IsNotEmpty({
     message: 'Email é obrigatório',
@@ -30,15 +31,6 @@ export class CreateUserDto
   name: string;
 
   @IsNotEmpty({
-    message: 'Senha é obrigatória',
-  })
-  @ApiProperty({
-    example: '123456',
-    description: 'Senha do usuário',
-  })
-  password: string;
-
-  @IsNotEmpty({
     message: 'Telefone é obrigatório',
   })
   @IsPhoneNumber(null, {
@@ -49,4 +41,11 @@ export class CreateUserDto
     description: 'Telefone do usuário',
   })
   phone: string;
+}
+
+export class UpdateByIdDto {
+  @IsNotEmpty({
+    message: 'Id é obrigatório',
+  })
+  id: number;
 }

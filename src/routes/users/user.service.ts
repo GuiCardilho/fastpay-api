@@ -19,7 +19,14 @@ export class UserService {
 
   async findAll({ take, skip, orderBy, where, order, select }: IPropsFindAll) {
     const users = await this.prismaService.user.findMany({
-      select,
+      select: select
+        ? select
+        : {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+          },
       take,
       skip,
       orderBy: {
@@ -63,6 +70,43 @@ export class UserService {
     const user = await this.prismaService.user.findUnique({
       where: {
         phone,
+      },
+    });
+
+    return user;
+  }
+
+  async findById(id: number) {
+    const user = await this.prismaService.user.findUnique({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+      },
+      where: {
+        id: Number(id),
+      },
+    });
+
+    return user;
+  }
+
+  async update(data: Prisma.UserUpdateInput, id: number) {
+    const user = await this.prismaService.user.update({
+      where: {
+        id: id,
+      },
+      data,
+    });
+
+    return user;
+  }
+
+  async delete(id: number) {
+    const user = await this.prismaService.user.delete({
+      where: {
+        id: id,
       },
     });
 

@@ -1,14 +1,16 @@
 import { HTTPResponse } from '@/utils/response';
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { FindAllUsersDto } from '../dtos/findAll.dto';
-import { IPropsFindAll, UserService } from '../user.service';
+import { FindAllTasksDto } from '../dtos/findAll.dto';
+import { IUser } from '../task.controller';
+import { IPropsFindAll, TaskService } from '../task.service';
 
 @Injectable()
-export class FindAllUsersUseCase {
-  constructor(private readonly userService: UserService) {}
+export class FindAllTasksUseCase {
+  constructor(private readonly taskService: TaskService) {}
 
-  async execute(query: FindAllUsersDto) {
-    const { page, limit, order, orderBy, select, filter, status } = query;
+  async execute(query: FindAllTasksDto, user: IUser) {
+    const { page, limit, order, orderBy, select, filter } = query;
+
     const selectParsed = select?.length ? JSON.parse(select) : [];
 
     const selectObject = selectParsed.reduce((acc, item) => {
@@ -22,7 +24,7 @@ export class FindAllUsersUseCase {
       orderBy: orderBy || 'id',
       order: order || 'DESC',
       where: {
-        AND: [],
+        AND: [{ userId: Number(user.id) }],
       },
     };
 
@@ -34,43 +36,30 @@ export class FindAllUsersUseCase {
       payload.where.AND.push({
         OR: [
           {
-            name: {
+            title: {
               contains: filter,
             },
           },
           {
-            email: {
-              contains: filter,
-            },
-          },
-          {
-            phone: {
+            description: {
               contains: filter,
             },
           },
         ],
       });
     }
-
-    if (status) {
-      if (status === 'active' || status === 'inactive') {
-        payload.where.AND.push({
-          deletedAt: status === 'active' ? null : { not: null },
-        });
-      }
-    }
     try {
-      const response = await this.userService.findAll(payload);
+      const response = await this.taskService.findAll(payload);
 
       return HTTPResponse({
         data: response,
-        message: 'Usuários encontrados com sucesso',
+        message: 'Tarefas encontradas com sucesso',
         status: HttpStatus.OK,
       });
     } catch (error) {
       return HTTPResponse({
         data: error,
-        message: 'Erro ao buscar usuários',
+        message: 'Erro ao buscar tarefas',
         status: HttpStatus.BAD_REQUEST,
       });
     }

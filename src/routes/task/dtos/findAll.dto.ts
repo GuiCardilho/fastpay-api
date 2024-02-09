@@ -1,7 +1,6 @@
-import { User } from '@prisma/client';
+import { Task } from '@prisma/client';
 import { IPagination } from '@type/pagination';
 import {
-  IsEnum,
   IsOptional,
   Validate,
   ValidatorConstraint,
@@ -11,17 +10,19 @@ import {
 @ValidatorConstraint()
 export class VerifySelectOptions implements ValidatorConstraintInterface {
   public async validate(select: string) {
-    const allowedSelects: IPagination<User>['select'] = [
+    const allowedSelects: IPagination<Task>['select'] = [
       'id',
-      'name',
-      'email',
+      'title',
+      'description',
+      'date',
+      'userId',
       'createdAt',
       'updatedAt',
       'deletedAt',
     ];
 
     const selectOptions = select?.length
-      ? (JSON.parse(select) as IPagination<User>['select'])
+      ? (JSON.parse(select) as IPagination<Task>['select'])
       : [];
 
     for (const option of selectOptions) {
@@ -34,7 +35,7 @@ export class VerifySelectOptions implements ValidatorConstraintInterface {
   }
 }
 
-export class FindAllUsersDto implements Omit<IPagination<User>, 'select'> {
+export class FindAllTasksDto implements Omit<IPagination<Task>, 'select'> {
   @IsOptional()
   page: number;
 
@@ -45,7 +46,7 @@ export class FindAllUsersDto implements Omit<IPagination<User>, 'select'> {
   order: 'ASC' | 'DESC';
 
   @IsOptional()
-  orderBy: keyof User;
+  orderBy: keyof Task;
 
   @IsOptional()
   filter: string;
@@ -55,8 +56,4 @@ export class FindAllUsersDto implements Omit<IPagination<User>, 'select'> {
     message: 'Opção de select inválida',
   })
   select: string;
-
-  @IsOptional()
-  @IsEnum(['active', 'inactive', 'all'], { message: 'Status inválido' })
-  status?: 'active' | 'inactive' | 'all';
 }

@@ -95,9 +95,13 @@ export class UserService {
   async update(data: Prisma.UserUpdateInput, id: number) {
     const user = await this.prismaService.user.update({
       where: {
-        id: id,
+        id: Number(id),
       },
-      data,
+      data: {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+      },
     });
 
     return user;

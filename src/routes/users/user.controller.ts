@@ -1,4 +1,5 @@
 import { GuardVerifyLoginUser } from '@/guard/guard';
+
 import {
   Body,
   Controller,
@@ -8,11 +9,14 @@ import {
   Post,
   Put,
   Query,
+  Res,
   UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { IUser } from '@routes/task/task.controller';
+import { Response } from 'express';
 import { CreateUserDto } from './dtos/create.dto';
 import { DeleteByIdDto } from './dtos/delete.dto';
 import { FindAllUsersDto } from './dtos/findAll.dto';
@@ -21,6 +25,9 @@ import { LoginUserDto } from './dtos/login.dto';
 import { UpdateByIdDto, UpdateUserDto } from './dtos/update.dto';
 import { UserUseCases } from './use-cases';
 
+interface IResponse extends Response {
+  user: IUser;
+}
 @ApiTags('users')
 @Controller('/users')
 export class UserController {
@@ -41,8 +48,10 @@ export class UserController {
   })
   @ApiBearerAuth()
   @UseGuards(GuardVerifyLoginUser)
-  async findAll(@Query() query: FindAllUsersDto) {
-    return this.userUseCases.findAllUsersUseCase.execute(query);
+  async findAll(@Query() query: FindAllUsersDto, @Res() res: Response) {
+    const response = await this.userUseCases.findAllUsersUseCase.execute(query);
+
+    return res.status(response.status).json(response);
   }
 
   @Get('/:id')
@@ -50,20 +59,23 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(GuardVerifyLoginUser)
   @ApiParam({ name: 'id', required: true, type: 'string' })
-  async findById(@Param() query: FindByIdDto) {
-    return this.userUseCases.findByIdUseCase.execute(query);
+  async findById(@Param() query: FindByIdDto, @Res() res: Response) {
+    const response = await this.userUseCases.findByIdUseCase.execute(query);
+    return res.status(response.status).json(response);
   }
 
   @Post()
   @UsePipes(ValidationPipe)
-  async create(@Body() body: CreateUserDto) {
-    return this.userUseCases.createUsersUseCase.execute(body);
+  async create(@Body() body: CreateUserDto, @Res() res: Response) {
+    const response = await this.userUseCases.createUsersUseCase.execute(body);
+    return res.status(response.status).json(response);
   }
 
   @Post('/auth')
   @UsePipes(ValidationPipe)
-  async login(@Body() body: LoginUserDto) {
-    return this.userUseCases.loginUseCase.execute(body);
+  async login(@Body() body: LoginUserDto, @Res() res: Response) {
+    const response = await this.userUseCases.loginUseCase.execute(body);
+    return res.status(response.status).json(response);
   }
 
   @Put('/:id')
@@ -71,16 +83,28 @@ export class UserController {
   @ApiParam({ name: 'id', required: true, type: 'string' })
   @ApiBearerAuth()
   @UseGuards(GuardVerifyLoginUser)
-  async update(@Body() body: UpdateUserDto, @Param() id: UpdateByIdDto) {
-    return this.userUseCases.updateUsersUseCase.execute(body, id);
+  async update(
+    @Body() body: UpdateUserDto,
+    @Param() id: UpdateByIdDto,
+    @Res() res: Response,
+  ) {
+    const response = await this.userUseCases.updateUsersUseCase.execute(
+      body,
+      id,
+    );
+    return res.status(response.status).json(response);
   }
 
   @Delete('/:id')
   @UsePipes(ValidationPipe)
-  @ApiParam({ name: 'id', required: true, type: 'string' })
+  @ApiParam({ name: 'id', required: true })
   @ApiBearerAuth()
   @UseGuards(GuardVerifyLoginUser)
-  async delete(@Param() id: DeleteByIdDto) {
-    return this.userUseCases.deleteUsersUseCase.execute(id);
+  async delete(@Param() id: DeleteByIdDto, @Res() res: IResponse) {
+    const response = await this.userUseCases.deleteUsersUseCase.execute(
+      id,
+      res.user,
+    );
+    return res.status(response.status).json(response);
   }
 }

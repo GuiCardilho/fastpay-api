@@ -4,8 +4,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
 import { UpdateByIdDto, UpdateTaskDto } from '../dtos/update.dto';
-import { TaskService } from '../task.service';
 import { IUser } from '../task.controller';
+import { TaskService } from '../task.service';
 
 @Injectable()
 export class UpdateTasksUseCase {

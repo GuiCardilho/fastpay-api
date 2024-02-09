@@ -19,8 +19,8 @@ export class FindAllTasksUseCase {
     }, {});
 
     const payload: IPropsFindAll = {
-      take: limit || 10,
-      skip: (page - 1) * limit || 0,
+      take: Number(limit || 10),
+      skip: Number((page - 1) * limit || 0),
       orderBy: orderBy || 'id',
       order: order || 'DESC',
       where: {

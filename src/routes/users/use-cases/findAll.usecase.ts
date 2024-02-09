@@ -8,7 +8,7 @@ export class FindAllUsersUseCase {
   constructor(private readonly userService: UserService) {}
 
   async execute(query: FindAllUsersDto) {
-    const { page, limit, order, orderBy, select, filter, status } = query;
+    const { page, limit, order, orderBy, select, filter } = query;
     const selectParsed = select?.length ? JSON.parse(select) : [];
 
     const selectObject = selectParsed.reduce((acc, item) => {
@@ -17,8 +17,8 @@ export class FindAllUsersUseCase {
     }, {});
 
     const payload: IPropsFindAll = {
-      take: limit || 10,
-      skip: (page - 1) * limit || 0,
+      take: Number(limit) || 10,
+      skip: Number((page - 1) * limit || 0),
       orderBy: orderBy || 'id',
       order: order || 'DESC',
       where: {
@@ -52,13 +52,6 @@ export class FindAllUsersUseCase {
       });
     }
 
-    if (status) {
-      if (status === 'active' || status === 'inactive') {
-        payload.where.AND.push({
-          deletedAt: status === 'active' ? null : { not: null },
-        });
-      }
-    }
     try {
       const response = await this.userService.findAll(payload);
 

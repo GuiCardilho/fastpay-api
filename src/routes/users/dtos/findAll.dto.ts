@@ -1,7 +1,6 @@
 import { User } from '@prisma/client';
 import { IPagination } from '@type/pagination';
 import {
-  IsEnum,
   IsOptional,
   Validate,
   ValidatorConstraint,
@@ -55,8 +54,4 @@ export class FindAllUsersDto implements Omit<IPagination<User>, 'select'> {
     message: 'Opção de select inválida',
   })
   select: string;
-
-  @IsOptional()
-  @IsEnum(['active', 'inactive', 'all'], { message: 'Status inválido' })
-  status?: 'active' | 'inactive' | 'all';
 }

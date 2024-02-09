@@ -50,9 +50,6 @@ export class TaskService {
   }
 
   async findById(id: number, userId: number) {
-    console.log('id', id);
-    console.log('userId', userId);
-
     const task = await this.prismaService.task.findUnique({
       where: {
         id: Number(id),

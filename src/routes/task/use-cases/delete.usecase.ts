@@ -11,6 +11,7 @@ export class DeleteTasksUseCase {
 
   async execute(query: DeleteByIdDto, user: IUser) {
     const { id } = query;
+
     const userId = Number(user.id);
 
     try {

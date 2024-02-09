@@ -1,6 +1,6 @@
 import { capitalize } from '@/utils/genericFunctions';
 import { HTTPResponse } from '@/utils/response';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
 import { CreateSaltHash } from '@/utils/bcrypt';
@@ -17,12 +17,20 @@ export class CreateUsersUseCase {
     try {
       const verifyEmail = await this.userService.findByEmail(email);
       if (verifyEmail) {
-        throw new HttpException('Email already exists', 400);
+        return HTTPResponse({
+          data: null,
+          message: 'E-mail já cadastrado',
+          status: HttpStatus.BAD_REQUEST,
+        });
       }
 
       const verifyPhone = await this.userService.findByPhone(phone);
       if (verifyPhone) {
-        throw new HttpException('Phone already exists', 400);
+        return HTTPResponse({
+          data: null,
+          message: 'Telefone já cadastrado',
+          status: HttpStatus.BAD_REQUEST,
+        });
       }
     } catch (error) {
       return HTTPResponse({
@@ -49,7 +57,7 @@ export class CreateUsersUseCase {
         status: HttpStatus.CREATED,
       });
     } catch (error) {
-      return HTTPResponse({
+      throw HTTPResponse({
         data: error,
         message: 'Erro ao criar usuario',
         status: HttpStatus.BAD_REQUEST,

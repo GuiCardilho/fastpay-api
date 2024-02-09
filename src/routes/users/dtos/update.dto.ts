@@ -33,7 +33,7 @@ export class UpdateUserDto
   @IsNotEmpty({
     message: 'Telefone é obrigatório',
   })
-  @IsPhoneNumber(null, {
+  @IsPhoneNumber('BR', {
     message: 'Tipo de telefone inválido',
   })
   @ApiProperty({

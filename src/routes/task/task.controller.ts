@@ -33,8 +33,8 @@ export interface IResponse extends Response {
   user: IUser;
 }
 
-@ApiTags('task')
-@Controller('/task')
+@ApiTags('tasks')
+@Controller('/tasks')
 export class TaskController {
   constructor(private readonly taskUseCases: TaskUseCases) {}
 

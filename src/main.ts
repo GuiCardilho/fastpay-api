@@ -5,10 +5,6 @@ import { AppModule } from './routes/app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors({
-    origin: '*',
-  });
-
   const config = new DocumentBuilder()
     .setTitle('FastPay API')
     .setDescription('skills test for Fastpay')
@@ -17,6 +13,14 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document);
+
+  app.enableCors({
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://fastpay-front.vercel.app',
+    ],
+  });
 
   await app.listen(3001);
 }

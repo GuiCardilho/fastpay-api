@@ -22,6 +22,8 @@ import { DeleteByIdDto } from './dtos/delete.dto';
 import { FindAllUsersDto } from './dtos/findAll.dto';
 import { FindByIdDto } from './dtos/findById';
 import { LoginUserDto } from './dtos/login.dto';
+import { ResetPasswordDto } from './dtos/resetPassword.dto';
+import { ResetPasswordUpdateDto } from './dtos/resetPasswordUpdate.dto';
 import { UpdateByIdDto, UpdateUserDto } from './dtos/update.dto';
 import { UserUseCases } from './use-cases';
 
@@ -75,6 +77,25 @@ export class UserController {
   @UsePipes(ValidationPipe)
   async login(@Body() body: LoginUserDto, @Res() res: Response) {
     const response = await this.userUseCases.loginUseCase.execute(body);
+    return res.status(response.status).json(response);
+  }
+
+  @Post('/reset')
+  @UsePipes(ValidationPipe)
+  async resetPassword(@Body() body: ResetPasswordDto, @Res() res: Response) {
+    const response =
+      await this.userUseCases.resetPasswordUsersUseCase.execute(body);
+    return res.status(response.status).json(response);
+  }
+
+  @Post('/reset/update')
+  @UsePipes(ValidationPipe)
+  async resetPasswordUpdate(
+    @Body() body: ResetPasswordUpdateDto,
+    @Res() res: Response,
+  ) {
+    const response =
+      await this.userUseCases.resetPasswordUsersUpdateUseCase.execute(body);
     return res.status(response.status).json(response);
   }
 

@@ -116,4 +116,17 @@ export class UserService {
 
     return user;
   }
+
+  async updatePassword(email: string, password: string) {
+    const user = await this.prismaService.user.update({
+      where: {
+        email,
+      },
+      data: {
+        password,
+      },
+    });
+
+    return user;
+  }
 }

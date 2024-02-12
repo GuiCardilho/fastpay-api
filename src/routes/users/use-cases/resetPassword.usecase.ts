@@ -30,6 +30,23 @@ export class ResetPasswordUsersUseCase {
       }
 
       try {
+        const red = await this.redis.get('reset_password_' + email);
+        if (red) {
+          return HTTPResponse({
+            data: null,
+            message: 'Código já enviado, aguarde 5 minutos e tente novamente!',
+            status: HttpStatus.BAD_REQUEST,
+          });
+        }
+      } catch (error) {
+        return HTTPResponse({
+          data: error,
+          message: 'Erro ao buscar informações no redis',
+          status: HttpStatus.BAD_REQUEST,
+        });
+      }
+
+      try {
         const { data, error } = await resend.emails.send({
           from: 'noreplyfastpay@gustavocardilho.tech',
           to: email,
